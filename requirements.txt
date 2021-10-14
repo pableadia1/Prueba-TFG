@@ -1,7 +1,7 @@
 Django
 djangorestframework
 psycopg2
-BeautifulSoup
+BeautifulSoup4
 requests
 lxml
 #django-heroku
