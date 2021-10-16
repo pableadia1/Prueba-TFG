@@ -592,3 +592,6 @@ def Scrapeo(ligas):
 def cargar(request):   
     Scrapeo(["/12/La-Liga-Stats"])
 
+def borrar(request):
+    Liga.objects.all().delete()
+

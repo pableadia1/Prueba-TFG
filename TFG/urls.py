@@ -14,6 +14,7 @@ from FutbolStats import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('carga/', views.cargar),
+    path('borrar/', views.borrar),
     path('liga/', ligas.as_view(), name="Liga"),
     path('liga/equipos/<int:id_liga>', equipos.as_view(), name="Equipos"),
     path('liga/tabla/<int:id_liga>', tabla.as_view(), name="Tabla"),
