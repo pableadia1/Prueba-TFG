@@ -93,14 +93,14 @@ APIS = {}
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-'''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'TFG',
-        'USER': 'postgres',
-        'PASSWORD': 'aniLINA95',
-        'HOST':'127.0.0.1',
+        'NAME': 'uubcpseq',
+        'USER': 'uubcpseq',
+        'PASSWORD': 'L_o4J0Orx00ObDZfjguhd_0-GdNXA2J5',
+        'HOST':'tai.db.elephantsql.com',
         'DATABASE_PORT': '5432',
     }
 }
@@ -117,6 +117,7 @@ DATABASES = {
         'DATABASE_PORT': '5432',
     }
 }
+'''
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
