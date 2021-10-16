@@ -15,5 +15,14 @@ install:
   - pip install -r requirements.txt
   
 script:
+  - cp travis_local_settings.py local_settings.py
   - coverage run --branch --source=. ./manage.py test
   - coverage xml
+
+deploy:
+  provider: heroku
+  app: futbolstats-prueba
+  strategy: git
+  apikey: 330e6c22-e5b9-442c-8aab-da7656da65a1
+  on:
+    branch: master
