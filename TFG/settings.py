@@ -97,10 +97,10 @@ APIS = {}
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'uubcpseq',
-        'USER': 'uubcpseq',
-        'PASSWORD': 'L_o4J0Orx00ObDZfjguhd_0-GdNXA2J5',
-        'HOST':'tai.db.elephantsql.com',
+        'NAME': 'd8cdc7b2a40gb8',
+        'USER': 'nzcafvigncvrgu',
+        'PASSWORD': 'c414a75b22958806fab3cfb2af1cb5b684b151359fe948b5577541ba9019c893',
+        'HOST':'ec2-23-23-162-138.compute-1.amazonaws.com',
         'DATABASE_PORT': '5432',
     }
 }
