@@ -1,1 +1,1 @@
-web: gunicorn prueba.wsgi
+web: gunicorn TFG.wsgi
