@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+BASEURL = 'https://git.heroku.com/futbolstats-prueba.git'
+
 
 # Application definition
 
@@ -87,7 +89,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'TFG.wsgi.application'
 
-
+APIS = {}
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -159,3 +161,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/' 
+
+import django_heroku
+django_heroku.settings(locals())
