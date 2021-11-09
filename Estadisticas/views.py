@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render
 
 from rest_framework.decorators import api_view
@@ -6,90 +7,62 @@ from rest_framework.views import APIView
 from rest_framework import serializers, status
 
 from Estadisticas.models import *
+from Jugador.views import jugador
 from .serializers import *
-from Jugador.serializers import JugadorSerializer,GoleadoresSerializer,Goleadores, Asistentes,AsistentesSerializer
+from Jugador.serializers import JugadorSerializer,Maximos,MaximosSerializer
 
 # Create your views here.
 
 
-class maxGoleadoresAsistentes(APIView):
-    def get(self,request):
+
+class maxGoleadoresAsistentesLiga(APIView):
+
+    def tipoEstadistica(self,dato,est):
+        if dato == "goles":
+            res = est.estadisticasGenerales.goles
+        elif dato == "asistencias":
+            res = est.estadisticasGenerales.asistencias
+        elif dato == "minutosJugados":
+            res = est.estadisticasGenerales.minutosJugados
+        return res
+
+    def get(self,request,id_gen):
         try:
             temporada = request.data["temporada"]
-            id_liga =  request.data["id_liga"]
+            dato = request.data["dato"]
+            todos = request.data["todos"]
             res = []
-            estadisticas = EstadisticasJugador.objects.filter(temporada=temporada).order_by("-estadisticasGenerales__goles")
+            estadisticas = EstadisticasJugador.objects.filter(temporada=temporada).order_by("-estadisticasGenerales__" + dato)
             for e in estadisticas[0:10]:
                 jug = Jugador.objects.get(id=e.jugador.id)
-                goles = e.estadisticasGenerales.goles
+                estadistica = self.tipoEstadistica(dato,e)
                 nombre, equipo, id = jug.nombre, jug.equipoActual.nombre, jug.equipoActual.liga_id
-                g = Goleadores(nombre=nombre,goles=goles,equipo=equipo)
-                if id_liga != "all":
-                    if id == id_liga:
+                g = Maximos(nombre=nombre,estadistica=estadistica,equipo=equipo)
+                if todos != True:
+                    if id == id_gen:
                         res.append(g)
                 else:
                     res.append(g)
-            serializer = GoleadoresSerializer(res,many="True")
+            serializer = MaximosSerializer(res,many="True")
+            return Response(serializer.data)
+        except:
+            return Response({"mensaje":"Especifique la temporada y la liga"},status=status.HTTP_400_BAD_REQUEST)
+ 
+    def post(self,request,id_gen):
+        try:
+            temporada = request.data["temporada"]
+            dato = request.data["dato"]
+            estadisticas = EstadisticasJugador.objects.filter(jugador__equipoActual__id=id_gen,temporada=temporada).order_by("-estadisticasGenerales__goles")[0]
+
+            jug = Jugador.objects.get(id=estadisticas.jugador.id)
+            estadistica = self.tipoEstadistica(dato,estadisticas)
+            nombre, equipo = jug.nombre, jug.equipoActual.nombre
+            g = Maximos(nombre=nombre,estadistica=estadistica,equipo=equipo)
+            serializer = MaximosSerializer(g)
             return Response(serializer.data)
         except:
             return Response({"mensaje":"Especifique la temporada y la liga"},status=status.HTTP_400_BAD_REQUEST)
     
-    def post(self,request):
-        try:
-            temporada = request.data["temporada"]
-            id_liga =  request.data["id_liga"]
-            res = []
-            estadisticas = EstadisticasJugador.objects.filter(temporada=temporada).order_by("-estadisticasGenerales__asistencias")
-            for e in estadisticas[0:10]:
-                jug = Jugador.objects.get(id=e.jugador.id)
-                asistencias = e.estadisticasGenerales.asistencias
-                nombre, equipo, id = jug.nombre, jug.equipoActual.nombre, jug.equipoActual.liga_id
-                g = Asistentes(nombre=nombre,asistencias=asistencias,equipo=equipo)
-                if id_liga != "all":
-                    if id == id_liga:
-                        res.append(g)
-                else:
-                    res.append(g)
-            serializer = AsistentesSerializer(res,many="True")
-            return Response(serializer.data)
-        except:
-            return Response({"mensaje":"Especifique la temporada y la liga"},status=status.HTTP_400_BAD_REQUEST)
-
-class maxGoleadoresAsistentesEquipo(APIView):
-    def get(self,request, id_equipo):
-
-        temporada = request.data["temporada"]
-        estadisticas = EstadisticasJugador.objects.filter(temporada=temporada, equipo__id=id_equipo).order_by("-estadisticasGenerales__goles")
-
-        jug = Jugador.objects.get(id=estadisticas[0].jugador.id)
-        goles = estadisticas.estadisticasGenerales.goles
-        nombre, equipo = jug.nombre, jug.equipoActual.nombre
-        g = Goleadores(nombre=nombre,goles=goles,equipo=equipo)
-        serializer = GoleadoresSerializer(g,many="True")
-        return Response(serializer.data)
-
-    
-    def post(self,request):
-        try:
-            temporada = request.data["temporada"]
-            id_liga =  request.data["id_liga"]
-            res = []
-            estadisticas = EstadisticasJugador.objects.filter(temporada=temporada).order_by("-estadisticasGenerales__asistencias")
-            for e in estadisticas[0:10]:
-                jug = Jugador.objects.get(id=e.jugador.id)
-                asistencias = e.estadisticasGenerales.asistencias
-                nombre, equipo, id = jug.nombre, jug.equipoActual.nombre, jug.equipoActual.liga_id
-                g = Asistentes(nombre=nombre,asistencias=asistencias,equipo=equipo)
-                if id_liga != "all":
-                    if id == id_liga:
-                        res.append(g)
-                else:
-                    res.append(g)
-            serializer = AsistentesSerializer(res,many="True")
-            return Response(serializer.data)
-        except:
-            return Response({"mensaje":"Especifique la temporada y la liga"},status=status.HTTP_400_BAD_REQUEST)
-
 class estadisticasJugador(APIView):
     def get(self,request, id_jugador):
         jug = EstadisticasJugador.objects.filter(jugador=id_jugador)

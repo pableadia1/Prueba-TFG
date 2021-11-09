@@ -12,24 +12,13 @@ class JugadorSerializerEquipo(serializers.ModelSerializer):
         model = Jugador
         fields = ['nombre','fechaDeNacimiento', 'nacionalidad', 'foto', 'id']
 
-class Goleadores:
-    def __init__(self, nombre, goles,equipo):
+class Maximos:
+    def __init__(self,nombre,estadistica,equipo):
         self.nombre = nombre
-        self.goles = goles
+        self.estadistica = estadistica
         self.equipo = equipo
 
-class GoleadoresSerializer(serializers.Serializer):
+class MaximosSerializer(serializers.Serializer):
     nombre = serializers.CharField()
-    goles = serializers.IntegerField()
-    equipo = serializers.CharField()
-
-class Asistentes:
-    def __init__(self, nombre, asistencias,equipo):
-        self.nombre = nombre
-        self.asistencias = asistencias
-        self.equipo = equipo
-
-class AsistentesSerializer(serializers.Serializer):
-    nombre = serializers.CharField()
-    asistencias = serializers.IntegerField()
+    estadistica = serializers.IntegerField()
     equipo = serializers.CharField()

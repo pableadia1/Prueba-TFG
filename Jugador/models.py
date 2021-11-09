@@ -12,6 +12,6 @@ class Jugador(models.Model):
     pie = models.CharField(max_length=10, choices=(("Izquierda","Zurdo"),("Derecha","Diestro"),("Ambos","Ambidiestro")))
     posicion =   models.CharField(max_length= 2, choices=(("PO","Portero"),("DF", "Defensa"), ("CC", "CentroCampista"), ("DL", "Delantero")))
     demarcaciones = ArrayField(models.CharField(max_length= 3), null=True)
-    equipoActual = models.ForeignKey(Equipo,on_delete=models.CASCADE, null= True)
+    equipoActual = models.ForeignKey(Equipo,on_delete=models.CASCADE, null=True)
     foto = models.CharField(max_length= 150)
     objects = models.Manager()

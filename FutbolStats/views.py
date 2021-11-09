@@ -11,14 +11,6 @@ import requests
 import lxml
 import datetime
 
-def obtenerTabla(tab):
-    res = None
-    if tab != None:
-        res = tab.find("tbody").find_all("tr")
-        if len(res) > 4:
-            res = res[-4:]
-    return res
-
 def Zeros(estadistica):
     if estadistica == "":
         estadistica = "0"
@@ -29,13 +21,13 @@ def Zeros(estadistica):
     return estadistica
 
 def yardMetrosDec(yard):
-    conv = float(yard) / 0.9144
+    conv = float(yard) * 0.9144
     sep = str(conv).split(".")
     res = sep[0]+"."+sep[1][0]
     return str(res)
 
 def yardMetros(yard):
-    conv = float(yard) / 0.9144
+    conv = float(yard) * 0.9144
     res = str(conv).split(".")[0]
     return str(res)
     
@@ -185,7 +177,7 @@ def posesion(s1):
                 dribbles = Zeros(p[14].text)
                 dribblesBien = Zeros(p[13].text)
                 controles = Zeros(p[18].text)
-                distanciaRecorrida = yardMetros(Zeros(p[19].text))
+                distanciaRecorrida = Zeros(yardMetros(p[19].text))
                 controlMal = Zeros(p[24].text)
                 blancoRecepcion = Zeros(p[26].text)
                 recepcionBuena = Zeros(p[27].text)
@@ -352,7 +344,7 @@ def estadisticasPortero(lisPortero, lisEstd):
         lisPor = []
         for l in lisPortero:
             por = EstadisticasPortero.objects.create(tirosRecibidos= l[1],cleanSheet= l[3],golesRecibidos= l[0],paradasRecibidos= l[2],
-            penaltiesEncagados= l[4],penaltiesFalladosContrario= l[6],penaltiesParados= l[5])
+            penaltiesEncajados= l[4],penaltiesFalladosContrario= l[6],penaltiesParados= l[5])
             lisPor.append(por)
             por.save()
         for es,p in  zip(lisEstd,lisPor): 
@@ -418,7 +410,7 @@ def obtenerLiga(url,url2):
     imagen = url.find("div", class_=["media-item logo loader"]).img["src"]
     img = requests.get(imagen)
     nombreImagen = nombreLiga + ".jpg"
-    with open("img/ligas" + nombreImagen, 'wb') as imagen:
+    with open("img/ligas/" + nombreImagen, 'wb') as imagen:
         imagen.write(img.content)
     pais = url.find_all("a")[1].text
 
@@ -460,105 +452,111 @@ def obtenerEquipos(tabla,lg):
         lis.append(s)
         eqp.append(equipo)
     return(lis,eqp)
-    
 
 ### datos Jugador ###
-def obtenerJugador(s,eqp):
-    cabezera = "https://fbref.com"       
-    for res in s:
-        d = res.find_all("td")
-        linkJugador = res.find("th").a["href"]
-        link = cabezera+linkJugador
-        r = requests.get(link).text
-        s = BeautifulSoup(r,"lxml").find("div",  id="meta")
-        s1 = BeautifulSoup(r, "lxml")
-        nombre = s.find("h1").find("span").text
-        if s.find("div", class_=["media-item"]) == None:
-            nombreImagen = "sinFoto.jpg"
-        else:
-            fotoJugador = s.img["src"]
-            img = requests.get(fotoJugador)
-            nombreImagen = nombre + ".jpg"
-            with open("img/jugadores/"+ nombreImagen, 'wb') as imagen:
-                imagen.write(img.content)
-            
-        datos = s.find_all("p")
-        r = datos[0].text
-        pie = "Ambos"
-        if "Posición" in r:
-            nombreCompleto = nombre
-            d1 = datos[0].text.split(":")
-            if "Pie" in d1[1]:
-                posicion = d1[1][:-16].split("(")[0][:3].replace(" ","")
-                dem = d1[1][:-16]
-                dem = demarcaciones(dem)
-            else:
-                posicion = d1[1].split("(")[0][:3].replace(" ","")
-                dem = d1[1][:-16]
-                dem = demarcaciones(str(dem))
-            if len(d1) == 3:
-                if "%" in d1[2]: 
-                    pie = d1[2].split("%")[1][1:-1]
-                else:
-                    pie = d1[2][1:]
-            alt = s.find("span", itemprop="height")
-            if alt != None:
-                altura = alt.text[:-2]
-            pess = s.find("span", itemprop="weight")
-            if pess != None:
-                peso = pess.text[:-2]
-            fechaNacimiento = datos[2].find("span")
-            if fechaNacimiento != None:
-                fechaNacimiento=fechaNacimiento.get("data-birth")
-            nacionalidad = s.a.text
-        else:
-            nombreCompleto = datos[0].text
-            d1 = datos[1].text.split(":")
-            if len(d1) <= 1:
-                d1 = datos[2].text.split(":")
-            if "Pie" in d1[1]:
-                posicion = d1[1][:-16].split("(")[0][:3].replace(" ","")
-                dem = d1[1][:-16]
-                dem = demarcaciones(dem)
-            else:
-                posicion = d1[1].split("(")[0][:3].replace(" ","")
-                dem = d1[1][:-16]
-                dem = demarcaciones(dem)
-            if len(d1) == 3:
-                if "%" in d1[2]: 
-                    pie = d1[2].split("%")[1][1:-1]
-                else:
-                    pie = d1[2][1:]
-            alt = s.find("span", itemprop="height")
-            if alt != None:
-                altura = alt.text[:-2]
-            pess = s.find("span", itemprop="weight")
-            if pess != None:
-                peso = pess.text[:-2]
-            fechaNacimiento = datos[3].find("span")
-            if fechaNacimiento != None:
-                fechaNacimiento=fechaNacimiento.get("data-birth")
-            nacionalidad = s.a.text
 
-        gen = generales(s1)
-        tp = tempJuego(s1)
-        cr = creacion(s1)
-        tir = tiros(s1)
-        tpa = tipoPase(s1)
-        pas = pases(s1)
-        por = portero(s1)
-        mis = misc(s1)
-        pos = posesion(s1)
-        defn = defensa(s1)
+def datosJugador(res,eqp):
+    cabezera = "https://fbref.com"   
+    d = res.find_all("td")
+    linkJugador = res.find("th").a["href"]
+    link = cabezera+linkJugador
+    r = requests.get(link).text
+    s = BeautifulSoup(r,"lxml").find("div",  id="meta")
+    s1 = BeautifulSoup(r, "lxml")
+    nombre = s.find("h1").find("span").text
+    if s.find("div", class_=["media-item"]) == None:
+        nombreImagen = "sinFoto.jpg"
+    else:
+        fotoJugador = s.img["src"]
+        img = requests.get(fotoJugador)
+        nombreImagen = nombre + ".jpg"
+        with open("img/jugadores/"+ nombreImagen, 'wb') as imagen:
+            imagen.write(img.content)
         
-### estadisticas Jugador ###
+    datos = s.find_all("p")
+    r = datos[0].text
+    pie = "Ambos"
+    if "Posición" in r:
+        nombreCompleto = nombre
+        d1 = datos[0].text.split(":")
+        if "Pie" in d1[1]:
+            posicion = d1[1][:-16].split("(")[0][:3].replace(" ","")
+            dem = d1[1][:-16]
+            dem = demarcaciones(dem)
+        else:
+            posicion = d1[1].split("(")[0][:3].replace(" ","")
+            dem = d1[1][:-16]
+            dem = demarcaciones(str(dem))
+        if len(d1) == 3:
+            if "%" in d1[2]: 
+                pie = d1[2].split("%")[1][1:-1]
+            else:
+                pie = d1[2][1:]
+        alt = s.find("span", itemprop="height")
+        if alt != None:
+            altura = alt.text[:-2]
+        pess = s.find("span", itemprop="weight")
+        if pess != None:
+            peso = pess.text[:-2]
+        fechaNacimiento = datos[2].find("span")
         if fechaNacimiento != None:
-            fn = fechaNacimiento.split("-")
-            fn = datetime.date(int(fn[0]),int(fn[1]),int(fn[2]))
+            fechaNacimiento=fechaNacimiento.get("data-birth")
+        nacionalidad = s.a.text
+    else:
+        nombreCompleto = datos[0].text
+        d1 = datos[1].text.split(":")
+        if len(d1) <= 1:
+            d1 = datos[2].text.split(":")
+        if "Pie" in d1[1]:
+            posicion = d1[1][:-16].split("(")[0][:3].replace(" ","")
+            dem = d1[1][:-16]
+            dem = demarcaciones(dem)
+        else:
+            posicion = d1[1].split("(")[0][:3].replace(" ","")
+            dem = d1[1][:-16]
+            dem = demarcaciones(dem)
+        if len(d1) == 3:
+            if "%" in d1[2]: 
+                pie = d1[2].split("%")[1][1:-1]
+            else:
+                pie = d1[2][1:]
+        alt = s.find("span", itemprop="height")
+        if alt != None:
+            altura = alt.text[:-2]
+        pess = s.find("span", itemprop="weight")
+        if pess != None:
+            peso = pess.text[:-2]
+        fechaNacimiento = datos[3].find("span")
+        if fechaNacimiento != None:
+            fechaNacimiento=fechaNacimiento.get("data-birth")
+        nacionalidad = s.a.text
+
+    if fechaNacimiento != None:
+        fn = fechaNacimiento.split("-")
+        fn = datetime.date(int(fn[0]),int(fn[1]),int(fn[2]))
         jug = Jugador.objects.create(nombre=nombre , nombreCompleto=nombreCompleto, nacionalidad= nacionalidad, fechaDeNacimiento = fn, 
         altura= altura, peso=peso, pie=pie, posicion = posicion, equipoActual=eqp, foto=nombreImagen, demarcaciones= dem)
+    
+    return (jug,s1)
 
-        estGen = estadisticasGenerales(gen,tp,jug)
+def obtenerJugador(s,eqp):      
+    for res in s:
+        jugador = datosJugador(res,eqp)
+
+        gen = generales(jugador[1])
+        tp = tempJuego(jugador[1])
+        cr = creacion(jugador[1])
+        tir = tiros(jugador[1])
+        tpa = tipoPase(jugador[1])
+        pas = pases(jugador[1])
+        por = portero(jugador[1])
+        mis = misc(jugador[1])
+        pos = posesion(jugador[1])
+        defn = defensa(jugador[1])
+        
+### estadisticas Jugador ###
+
+        estGen = estadisticasGenerales(gen,tp,jugador[0])
         estPor = estadisticasPortero(por,estGen)
         estDef = estadisticasDefensa(defn,estGen)
         estCreacion = estadisticasCreacion(cr,estGen)
@@ -589,8 +587,12 @@ def Scrapeo(ligas):
         link = linkEstadisticas+l
         ScrappingLiga(link)
 
-def cargar(request):   
-    Scrapeo(["/12/La-Liga-Stats"])
+def cargar(request):
+    if request.method=='POST':
+        if 'Iniciar' in request.POST:      
+            Scrapeo(["/12/La-Liga-Stats"])
+            return render(request, 'carga.html')
+    return render(request, 'carga.html')
 
 def borrar(request):
     Liga.objects.all().delete()

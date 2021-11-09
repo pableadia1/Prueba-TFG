@@ -99,7 +99,7 @@ class EstadisticasPortero(models.Model):
     tirosRecibidos = models.IntegerField()
     paradasRecibidos =models.IntegerField()
     cleanSheet =models.IntegerField()
-    penaltiesEncagados = models.IntegerField()
+    penaltiesEncajados = models.IntegerField()
     penaltiesParados = models.IntegerField()
     penaltiesFalladosContrario = models.IntegerField()
     objects = models.Manager()

@@ -93,7 +93,7 @@ APIS = {}
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -117,7 +117,7 @@ DATABASES = {
         'DATABASE_PORT': '5432',
     }
 }
-'''
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -139,10 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:8080',
     'http://localhost:4200'
-    
-
 )
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
